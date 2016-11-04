@@ -1,6 +1,14 @@
 'use strict';
-var Wallet = function(priv) {
-	this.privKey = priv.length == 32 ? priv : Buffer(priv, 'hex')
+var Wallet = function(priv, pub, path, hwType, hwTransport) {
+	if (typeof priv != "undefined") {
+		this.privKey = priv.length == 32 ? priv : Buffer(priv, 'hex')
+	}
+	this.pubKey = pub;
+	this.path = path;
+	this.hwType = hwType;
+	this.hwTransport = hwTransport;
+	this.balance = "loading";
+    this.type = "default";
 }
 Wallet.generate = function(icapDirect) {
 	if (icapDirect) {
@@ -14,20 +22,59 @@ Wallet.generate = function(icapDirect) {
 		return new Wallet(ethUtil.crypto.randomBytes(32))
 	}
 }
+Wallet.prototype.setBalance = function(isClassic){
+    var parentObj = this;
+    ajaxReq.getBalance(parentObj.getAddressString(),isClassic,function(data){
+       if (data.error) parentObj.balance = data.msg;
+       else parentObj.balance = etherUnits.toEther(data.data.balance, 'wei');
+    });
+}
+Wallet.prototype.getBalance = function(){
+    return this.balance;
+}
+Wallet.prototype.getPath = function() {
+	return this.path;
+}
+Wallet.prototype.getHWType = function() {
+	return this.hwType;
+}
+Wallet.prototype.getHWTransport = function() {
+	return this.hwTransport;
+}
 Wallet.prototype.getPrivateKey = function() {
 	return this.privKey
 }
 Wallet.prototype.getPrivateKeyString = function() {
-	return this.getPrivateKey().toString('hex')
+	if (typeof this.privKey != "undefined") {
+		return this.getPrivateKey().toString('hex')
+	}
+	else {
+		return "";
+	}
 }
 Wallet.prototype.getPublicKey = function() {
-	return ethUtil.privateToPublic(this.privKey)
+	if (typeof this.pubKey == "undefined") {
+		return ethUtil.privateToPublic(this.privKey)
+	}
+	else {
+		return this.pubKey;
+	}
 }
 Wallet.prototype.getPublicKeyString = function() {
-	return '0x' + this.getPublicKey().toString('hex')
+	if (typeof this.pubKey == "undefined") {
+		return '0x' + this.getPublicKey().toString('hex')
+	}
+	else {
+		return "0x" + this.pubKey.toString('hex')
+	}
 }
 Wallet.prototype.getAddress = function() {
-	return ethUtil.privateToAddress(this.privKey)
+	if (typeof this.pubKey == "undefined") {
+		return ethUtil.privateToAddress(this.privKey)
+	}
+	else {
+		return ethUtil.publicToAddress(this.pubKey, true)
+	}
 }
 Wallet.prototype.getAddressString = function() {
 	return '0x' + this.getAddress().toString('hex')
@@ -185,6 +232,10 @@ Wallet.fromV3 = function(input, password, nonStrict) {
 	}
 	var decipher = ethUtil.crypto.createDecipheriv(json.crypto.cipher, derivedKey.slice(0, 16), new Buffer(json.crypto.cipherparams.iv, 'hex'))
 	var seed = Wallet.decipherBuffer(decipher, ciphertext, 'hex')
+    while(seed.length<32) {
+        var nullBuff = new Buffer ([0x00]);
+        seed = Buffer.concat([nullBuff, seed]);
+    }
 	return new Wallet(seed)
 }
 Wallet.prototype.toV3String = function(password, opts) {

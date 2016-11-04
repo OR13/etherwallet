@@ -3,7 +3,7 @@ var http;
 var ajaxReq = function() {}
 ajaxReq.http = null;
 ajaxReq.postSerializer = null;
-ajaxReq.SERVERURL = "https://rpc.myetherwallet.com:8443/api.mew";
+ajaxReq.SERVERURL = "https://rpc.myetherwallet.com/api.mew";
 ajaxReq.COINMARKETCAPAPI = "https://coinmarketcap-nexuist.rhcloud.com/api/";
 ajaxReq.pendingPosts = [];
 ajaxReq.config = {
@@ -11,52 +11,46 @@ ajaxReq.config = {
 		'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
 	}
 };
-ajaxReq.getBalance = function(addr, callback) {
+ajaxReq.getCurrentBlock = function(isClassic, callback) {
+	this.post({
+		currentBlock: '',
+        isClassic: isClassic
+	}, callback);
+}
+ajaxReq.getBalance = function(addr, isClassic, callback) {
 	this.post({
 		balance: addr,
-        isClassic: false
+        isClassic: isClassic
 	}, callback);
 }
-ajaxReq.getClassicBalance = function(addr, callback) {
-	this.post({
-		balance: addr,
-        isClassic: true
-	}, callback);
-}
-ajaxReq.getTransactionData = function(addr, callback) {
+ajaxReq.getTransactionData = function(addr, isClassic, callback) {
 	this.post({
 		txdata: addr,
-        isClassic: false
+        isClassic: isClassic
 	}, callback);
 }
-ajaxReq.getClassicTransactionData = function(addr, callback) {
-	this.post({
-		txdata: addr,
-        isClassic: true
-	}, callback);
-}
-ajaxReq.sendRawTx = function(rawTx, callback) {
+ajaxReq.sendRawTx = function(rawTx, isClassic, callback) {
 	this.post({
 		rawtx: rawTx,
-        isClassic: false
+        isClassic: isClassic
 	}, callback);
 }
-ajaxReq.sendClassicRawTx = function(rawTx, callback) {
-	this.post({
-		rawtx: rawTx,
-        isClassic: true
-	}, callback);
-}
-ajaxReq.getEstimatedGas = function(txobj, callback) {
+ajaxReq.getEstimatedGas = function(txobj, isClassic, callback) {
 	this.post({
 		estimatedGas: txobj,
-        isClassic: false
+        isClassic: isClassic
 	}, callback);
 }
-ajaxReq.getEthCall = function(txobj, callback) {
+ajaxReq.getEthCall = function(txobj, isClassic, callback) {
 	this.post({
 		ethCall: txobj,
-        isClassic: false
+        isClassic: isClassic
+	}, callback);
+}
+ajaxReq.getTraceCall = function(txobj, isClassic, callback) {
+	this.post({
+		traceCall: txobj,
+        isClassic: isClassic
 	}, callback);
 }
 ajaxReq.queuePost = function() {
@@ -71,7 +65,11 @@ ajaxReq.queuePost = function() {
 ajaxReq.post = function(data, callback) {
 	this.pendingPosts.push({
 		data: data,
-		callback: callback
+		callback: function(_data) {
+			 if (_data && _data.error)
+			     _data.msg = globalFuncs.getEthNodeMsg(_data.msg);
+			callback(_data);
+		}
 	});
 	if (this.pendingPosts.length == 1) this.queuePost();
 }

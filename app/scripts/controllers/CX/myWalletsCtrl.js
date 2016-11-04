@@ -35,11 +35,13 @@ var myWalletsCtrl = function($scope, $sce) {
         $scope[varWal][j].tokens = [];
 				for (var i = 0; i < $scope.tokens.length; i++) {
 					$scope[varWal][j].tokens.push(new Token($scope.tokens[i].address, $scope[varWal][j].addr, $scope.tokens[i].symbol, $scope.tokens[i].decimal));
+                    $scope[varWal][j].tokens[$scope[varWal][j].tokens.length-1].setBalance();
 				}
         var storedTokens = localStorage.getItem("localTokens") != null ? JSON.parse(localStorage.getItem("localTokens")) : [];
         for (var i = 0; i < storedTokens.length; i++) {
 					$scope[varWal][j].tokens.push(new Token(storedTokens[i].contractAddress, $scope[varWal][j].addr, globalFuncs.stripTags(storedTokens[i].symbol), storedTokens[i].decimal));
-				}
+                    $scope[varWal][j].tokens[$scope[varWal][j].tokens.length-1].setBalance();
+                }
 		}
 	}
 	$scope.updateBalance = function(varWal) {
@@ -48,7 +50,7 @@ var myWalletsCtrl = function($scope, $sce) {
 		}
 	};
 	$scope.setBalance = function(address, id, varWal) {
-		ajaxReq.getBalance(address, function(data) {
+		ajaxReq.getBalance(address, false, function(data) {
 			if (data.error) {
 				$scope[varWal][id].balance = data.msg;
 			} else {
@@ -128,7 +130,7 @@ var myWalletsCtrl = function($scope, $sce) {
 			}));
 			$scope.encFileName = $scope.wallet.getV3Filename();
 		}
-		ajaxReq.getBalance($scope.wallet.getAddressString(), function(data) {
+		ajaxReq.getBalance($scope.wallet.getAddressString(), false, function(data) {
 			if (data.error) {
 				$scope.etherBalance = data.msg;
 			} else {

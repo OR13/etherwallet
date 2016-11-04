@@ -2,8 +2,8 @@
 // Variables
 // --------------------------------------------------
 
-@ether-navy:      darken(#2E4868, 5%);
-@ether-blue:      darken(#2BB2DD, 5%);
+@ether-navy:      #163151;
+@ether-blue:      #0e97c0;
 
 //== Colors
 //
@@ -36,9 +36,9 @@
 //** Global textual link color.
 @link-color:            @brand-primary;
 //** Link hover color set via `darken()` function.
-@link-hover-color:      darken(@link-color, 15%);
+@link-hover-color:      darken(@link-color, 5%);
 //** Link hover decoration.
-@link-hover-decoration: underline;
+@link-hover-decoration: none;
 
 
 //== Typography
@@ -148,7 +148,7 @@
 @btn-font-weight:                normal;
 
 @btn-default-color:              #333;
-@btn-default-bg:                 #fff;
+@btn-default-bg:                 #ececec;
 @btn-default-border:             #ccc;
 
 @btn-primary-color:              #fff;
@@ -206,7 +206,7 @@
 @input-border-focus:             #66afe9;
 
 //** Placeholder text color
-@input-color-placeholder:        #ABABAB;
+@input-color-placeholder:        darken(@gray-lighter, 10%);
 
 //** Default `.form-control` height
 @input-height-base:              (@line-height-computed + (@padding-base-vertical * 2) + 2);
@@ -244,9 +244,9 @@
 @dropdown-divider-bg:            #e5e5e5;
 
 //** Dropdown link text color.
-@dropdown-link-color:            @gray-dark;
+@dropdown-link-color:            @ether-navy;
 //** Hover color for dropdown links.
-@dropdown-link-hover-color:      darken(@gray-dark, 5%);
+@dropdown-link-hover-color:      @ether-blue;
 //** Hover background for dropdown links.
 @dropdown-link-hover-bg:         #f5f5f5;
 

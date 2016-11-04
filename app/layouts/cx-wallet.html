@@ -1,10 +1,6 @@
 @@include( '../includes/header.tpl', { "site": "cx" } )
 
-<section class="container" ng-controller='tabsCtrl'>
-  <ul class="nav nav-tabs">
-    <li ng-repeat="tab in tabNames track by $index" ng-class="{active: $index==activeTab}" ng-show="{{tab.cx}}" ng-click="tabClick($index)"> <a>{{tab.name}}</a></li>
-  </ul>
-</section>
+
 <br />
 
 <section class="container" style="min-height: 50%" ng-controller='viewCtrl'>
@@ -19,11 +15,11 @@
 
     @@include( '../includes/offlineTransaction.tpl', { "site": "cx" } )
 
-    @@include( '../includes/tokens.tpl', { "site": "cx" } )
-
     @@include( '../includes/dao.tpl', { "site": "cx" } )
 
     @@include( '../includes/digix.tpl', { "site": "cx" } )
+
+    @@include( '../includes/deployContract.tpl', { "site": "cx" } )
 
     @@include( '../includes/help.tpl', { "site": "cx" } )
 
